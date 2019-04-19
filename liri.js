@@ -2,9 +2,12 @@ require("dotenv").config();
 const keys = require("./keys.js");
 const axios = require('axios');
 const Spotify = require('node-spotify-api');
+const fs = require('fs');
+const moment = require('moment');
 const command = process.argv[2];
 const value = process.argv[3];
 const spotify = new Spotify(keys.spotify);
+
 
 switch(command) {
     case 'concert-this':
@@ -30,12 +33,12 @@ function showSpotify(item) {
         }
        
       //console.log(data);
-      var songs = data.tracks.items;
-      for(i=0;i<songs.length;i++)
-      console.log("Artist(s): " + songs[i].artists[i].name);
-      console.log("Song Name: " + songs[i].name);
-      console.log("Preview Link: " + songs[i].preview_url);
-      console.log("Album: " + songs[i].album.name);
+      var songs = data.tracks.items
+      //for(let i=0; i < 5; i++)
+      console.log("Artist(s): " + songs[0].artists[0].name);
+      console.log("Song Name: " + songs[0].name);
+      console.log("Preview Link: " + songs[0].preview_url);
+      console.log("Album: " + songs[0].album.name);
       });
 }
 
@@ -51,15 +54,12 @@ function showConcerts(artist) {
         })
         .then(function (response) {
             for (var i = 0; i < response.data.length; i++) {
-
-                var datetime = response.data[i].datetime; 
-                var dateArr = datetime.split('T'); 
     
                 var concertResults = 
                     "--------------------------------------------------------------------" +
                         "\nVenue Name: " + response.data[i].venue.name + 
                         "\nVenue Location: " + response.data[i].venue.city +
-                        "\nDate of the Event: " + moment(dateArr[0], "MM-DD-YYYY");
+                        "\nDate of the Event: " + moment(response.data[i].datetime).format('LL');
                 console.log(concertResults);
             }
         
@@ -98,3 +98,13 @@ function showMovie(value) {
             console.log(error);
         })   
 };
+function doThis(value) {
+
+    fs.readFile("random.txt", "utf8", function(error, data) {
+        if (error) {
+            return console.log(error);
+        }
+        var dataArr = data.split(',');
+        showSpotify(dataArr[0], dataArr[1]);
+    })
+}
